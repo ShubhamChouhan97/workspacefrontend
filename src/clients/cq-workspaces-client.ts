@@ -306,13 +306,30 @@ export class CQWorkspacesClient extends (EventEmitter as new () => TypedEmitter<
 		this._disposables = [];
 	};
 
+	resendOtp = async (): Promise<any> => {
+		try {
+			const response = await this._cqAPI.get('/auth/resend-otp');
+			console.log('response status', response);
+			// if (response.data.status === 401) {
+			// 	console.log('hiello');
+			// 	}
+			return response.data;
+		} catch (error: any) {
+			throw new Error(error?.message ?? 'Somthing went wrong try again.');
+		}
+		};
+
 	otp = async (otpPayload: {
 		otp: number;
 	}): Promise<any> => {
 		try {
 			console.log('otp at  cq-workspace-clent', otpPayload);
 			const response = await this._cqAPI.post('/auth/otp', otpPayload);
-			// console.log('response status', response.data.status);
+			console.log('response status', response);
+			// if (response.data.status === 401) {
+			// 	console.log('hiello');
+			// 	}
+
 			if (response.data.status === 'Success') {
 			console.log('hi');
             this.getSessionData();

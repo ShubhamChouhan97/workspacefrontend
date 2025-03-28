@@ -41,7 +41,8 @@ export interface AppState {
 	activeChannelId: string
 
 	init: () => Promise<void>
-    otp:(otpPayload:{ otp:number })=> Promise<void>
+    otp:(otpPayload:{ otp:number })=> Promise<any>
+	resendOtp:()=> Promise<any>
 	login: (loginPayload: { email: string, password: string, rememberMe: boolean }) => Promise<void>
 	signup: (signupPayload: { email: string, password: string, name: string, token: string }
 	) => Promise<void>
@@ -185,6 +186,7 @@ const initialState: AppState = {
 
 	init: async () => { },
 	otp: async () => { },
+	resendOtp: async () => { },
 	login: async () => { },
 	signup: async () => { },
 	forgotPassword: async () => { },
@@ -1038,15 +1040,40 @@ export function createAppStore(cqWorkspacesClient: CQWorkspacesClient): UseStore
 				}
 				return true;
 			},
-           otp: async (otpPayload) => {
-			try {
-				console.log('otpPayload', otpPayload);
-				const response = await cqWorkspacesClient.otp(otpPayload);
-				return response;
-			} catch (error: any) {
-				throw new Error(error?.message ?? error);
-			}
+        //    otp: async (otpPayload) => {
+		// 	try {
+		// 		console.log('otpPayload', otpPayload);
+		// 		const response = await cqWorkspacesClient.otp(otpPayload);
+		// 		console.log('error:', response.error);
+		// 		if (response.error) {
+		// 			// console.log('hi');
+		// 			throw new Error(response.error);
+		// 			throw new Error('OTP Not Matched');
+		// 		}
+		// 		return response;
+		// 	} catch (error: any) {
+		// 		throw new Error(error?.message ?? error);
+		// 	}
+		// },
+		resendOtp: async () => {
+	try {
+		const response = await cqWorkspacesClient.resendOtp();
+		return response;
+		} catch (error: any) {
+		throw new Error(error?.message || 'Something went wrong. Please try again.');
+		}
 		},
+		otp: async (otpPayload) => {
+	try {
+		console.log('otpPayload', otpPayload);
+		const response = await cqWorkspacesClient.otp(otpPayload);
+		return response;
+	} catch (error: any) {
+		console.error('OTP Request Failed:', error?.message || error);
+		throw new Error(error?.message || 'Something went wrong. Please try again.');
+	}
+},
+
 			login: async (loginPayload) => {
 				try {
 					await cqWorkspacesClient.login(loginPayload);

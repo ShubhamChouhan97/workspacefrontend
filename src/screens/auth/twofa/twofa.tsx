@@ -11,73 +11,11 @@ import { AuthModal } from '../../../components/authModal';
 
 const appStoreSelector = (state: AppState) => ({
 	otpRequest: state.otp,
+	resendOtp: state.resendOtp,
 });
 
-// export const TwoFa:React.FunctionComponent = () => {
-// 	// const history = useHistory();
-// 	const { otpRequest } = useAppStore(appStoreSelector);
-// 	const [loading, setLoading] = useState<boolean>(false);
-
-//     const handleOtpFormSubmit = useCallback(async (value: any) => {
-//         setLoading(true);
-//         try {
-//             console.log('value', value);
-//             await otpRequest(value);
-//         } catch (error:any) {
-//             // if (error?.message === '2FA') {
-//             //     // ✅ Corrected navigation
-//             //     history.push('/2fa');
-//             //     } else {
-//             //         message.error(error?.message ?? 'An error occurred');
-//             //     }
-//             console.log(error);
-//             message.error(error?.message ?? 'An error occurred');
-//         } finally {
-//             setLoading(false);
-//         }
-
-//         console.log(value);
-//     }, [otpRequest]);
-
-// 	return (
-// 		<AuthModal title="Enter OTP">
-// 			<>
-// 				<Form
-// 					layout="vertical"
-// 					onFinish={handleOtpFormSubmit}
-// 					className={style.formOnly}
-// 				>
-//                 <Form.Item
-//                 label="OTP"
-//                 name="OTP"
-//                 rules={[{
-//                 required: true,
-//                 message: 'Please enter OTP!',
-//                 },
-//                 ]}
-//                 >
-//                 <InputNumber placeholder="Enter OTP" style={{ width: '100%' }} />
-//                 </Form.Item>
-// 					<Form.Item>
-// 						<div className={style.actionButton}>
-// 							<Button
-// 								type="primary"
-// 								size="large"
-// 								htmlType="submit"
-// 								loading={loading}
-// 								className={style.loginButton}
-// 							>
-// 								Submit
-// 							</Button>
-// 						</div>
-// 					</Form.Item>
-// 				</Form>
-// 			</>
-// 		</AuthModal>
-// 	);
-// };
 export const TwoFa = () => {
-	const { otpRequest } = useAppStore(appStoreSelector);
+	const { otpRequest, resendOtp } = useAppStore(appStoreSelector);
 	const [loading, setLoading] = useState(false);
 	const [showResend, setShowResend] = useState(false);
 
@@ -91,17 +29,50 @@ export const TwoFa = () => {
 	const handleOtpFormSubmit = useCallback(async (value) => {
 		setLoading(true);
 		try {
-			await otpRequest(value);
+			const data = await otpRequest(value);
+			console.log('resp:', data.error);
+			if (data.error) {
+				message.error('Invalid OTP');
+			}
 		} catch (error) {
 			console.log(error);
+			let errorMessage = 'An error occurred';
+            if (typeof error === 'string') {
+            errorMessage = error;
+            } else if (error instanceof Error) {
+            errorMessage = error.message;
+            }
+            message.error(errorMessage);
 		} finally {
 			setLoading(false);
 		}
 	}, [otpRequest]);
 
-	const handleResendOtp = () => {
-		console.log('hi');
-	};
+	// const handleResendOtp = () => {
+	// 	console.log('hi');
+	// };
+
+	const handleResendOtp = useCallback(async () => {
+		setLoading(true);
+		try {
+			const data = await resendOtp();
+			console.log('resp:', data.error);
+			if (data.error) {
+				message.error('Invalid OTP');
+			}
+		} catch (error) {
+			console.log(error);
+			let errorMessage = 'An error occurred';
+            if (typeof error === 'string') {
+            errorMessage = error;
+            } else if (error instanceof Error) {
+            errorMessage = error.message;
+            }
+            message.error(errorMessage);
+		} finally {
+			setLoading(false);
+		}
+	}, [resendOtp]);
 
 	return (
 		<AuthModal title="Enter OTP">
