@@ -30,7 +30,6 @@ export const TwoFa = () => {
 		setLoading(true);
 		try {
 			const data = await otpRequest(value);
-			console.log('resp:', data.error);
 			if (data.error) {
 				message.error('Invalid OTP');
 			}
@@ -48,17 +47,13 @@ export const TwoFa = () => {
 		}
 	}, [otpRequest]);
 
-	// const handleResendOtp = () => {
-	// 	console.log('hi');
-	// };
-
 	const handleResendOtp = useCallback(async () => {
 		setLoading(true);
 		try {
 			const data = await resendOtp();
 			console.log('resp:', data.error);
-			if (data.error) {
-				message.error('Invalid OTP');
+			if (data.message) {
+				message.success('OTP Sended Successfully');
 			}
 		} catch (error) {
 			console.log(error);

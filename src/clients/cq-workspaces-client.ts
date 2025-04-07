@@ -310,9 +310,6 @@ export class CQWorkspacesClient extends (EventEmitter as new () => TypedEmitter<
 		try {
 			const response = await this._cqAPI.get('/auth/resend-otp');
 			console.log('response status', response);
-			// if (response.data.status === 401) {
-			// 	console.log('hiello');
-			// 	}
 			return response.data;
 		} catch (error: any) {
 			throw new Error(error?.message ?? 'Somthing went wrong try again.');
@@ -326,21 +323,10 @@ export class CQWorkspacesClient extends (EventEmitter as new () => TypedEmitter<
 			console.log('otp at  cq-workspace-clent', otpPayload);
 			const response = await this._cqAPI.post('/auth/otp', otpPayload);
 			console.log('response status', response);
-			// if (response.data.status === 401) {
-			// 	console.log('hiello');
-			// 	}
-
 			if (response.data.status === 'Success') {
-			console.log('hi');
             this.getSessionData();
 		this.connectSocket();
 			}
-			// if (response.data.error) {
-			// 	console.log(response.data.error);
-			// 	throw new Error(response.data.error);
-			// }
-			// this.getSessionData();
-			// this.connectSocket();
 			return response.data;
 		} catch (error: any) {
 			throw new Error(error?.message ?? 'Somthing went wrong try again.');
@@ -950,6 +936,7 @@ export class CQWorkspacesClient extends (EventEmitter as new () => TypedEmitter<
 		const response = await this._workspacesAPI.post('/user/getUsersList', {
 			channelId,
 		});
+		console.log('getChannelUsersList response', response);
 		return (response.data && response.data.usersData) || {};
 	};
 
